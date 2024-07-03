@@ -270,7 +270,9 @@ class SassParser extends StylesheetParser {
     }
     if (!buffer.trailingString.trimRight().endsWith("*/")) buffer.write(" */");
 
-    return LoudComment(buffer.interpolation(scanner.spanFrom(start)));
+    var text = buffer.interpolation(scanner.spanFrom(start));
+    whitespaceWithoutComments();
+    return LoudComment(text, scanner.location);
   }
 
   void whitespaceWithoutComments() {
@@ -284,19 +286,21 @@ class SassParser extends StylesheetParser {
   }
 
   void loudComment() {
-    // This overrides loud comment consumption so that it doesn't consume
-    // multi-line comments.
-    scanner.expect("/*");
-    while (true) {
-      var next = scanner.readChar();
-      if (next.isNewline) scanner.error("expected */.");
-      if (next != $asterisk) continue;
+    recordWhitespace(() {
+      // This overrides loud comment consumption so that it doesn't consume
+      // multi-line comments.
+      scanner.expect("/*");
+      while (true) {
+        var next = scanner.readChar();
+        if (next.isNewline) scanner.error("expected */.");
+        if (next != $asterisk) continue;
 
-      do {
-        next = scanner.readChar();
-      } while (next == $asterisk);
-      if (next == $slash) break;
-    }
+        do {
+          next = scanner.readChar();
+        } while (next == $asterisk);
+        if (next == $slash) break;
+      }
+    });
   }
 
   /// Expect and consume a single newline character.

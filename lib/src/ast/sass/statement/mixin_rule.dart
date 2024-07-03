@@ -2,6 +2,7 @@
 // MIT-style license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'package:meta/meta.dart';
 import 'package:source_span/source_span.dart';
 
 import '../../../util/span.dart';
@@ -28,7 +29,19 @@ final class MixinRule extends CallableDeclaration implements SassDeclaration {
     return startSpan.initialIdentifier();
   }
 
-  MixinRule(super.name, super.arguments, super.children, super.span,
+  /// @nodoc
+  @internal
+  final FileLocation afterTrailing;
+
+  MixinRule(String name, ArgumentDeclaration arguments,
+      Iterable<Statement> children, FileSpan span,
+      {SilentComment? comment})
+      : super(name, arguments, children, span, span.end, comment: comment);
+
+  /// @nodoc
+  @internal
+  MixinRule.internal(super.name, super.arguments, super.children, super.span,
+      this.afterTrailing,
       {super.comment});
 
   T accept<T>(StatementVisitor<T> visitor) => visitor.visitMixinRule(this);

@@ -32,6 +32,10 @@ import 'variable_declaration.dart';
 final class Stylesheet extends ParentStatement<List<Statement>> {
   final FileSpan span;
 
+  /// @nodoc
+  @internal
+  final FileLocation afterTrailing;
+
   /// Whether this was parsed from a plain CSS stylesheet.
   ///
   /// @nodoc
@@ -49,11 +53,10 @@ final class Stylesheet extends ParentStatement<List<Statement>> {
   Stylesheet(Iterable<Statement> children, FileSpan span)
       : this.internal(children, span);
 
-  /// A separate internal constructor that allows [plainCss] to be set.
-  ///
   /// @nodoc
   @internal
-  Stylesheet.internal(Iterable<Statement> children, this.span,
+  Stylesheet.internal(
+      Iterable<Statement> children, this.span, this.afterTrailing,
       {this.plainCss = false})
       : super(List.unmodifiable(children)) {
     loop:

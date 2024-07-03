@@ -34,6 +34,14 @@ class Parser {
   /// from source.
   final InterpolationMap? _interpolationMap;
 
+  /// The position at the beginning of the most recent chunk of whitespace
+  /// (including non-statement comments) consumed.
+  var _beforeWhitespace = 0;
+
+  /// The position at the end of the most recent chunk of whitespace (including
+  /// non-statement comments) consumed.
+  var _afterWhitespace = 0;
+
   /// Parses [text] as a CSS identifier and returns the result.
   ///
   /// Throws a [SassFormatException] if parsing fails.
@@ -84,25 +92,31 @@ class Parser {
   /// Consumes whitespace, including any comments.
   @protected
   void whitespace() {
-    do {
-      whitespaceWithoutComments();
-    } while (scanComment());
+    recordWhitespace(() {
+      do {
+        whitespaceWithoutComments();
+      } while (scanComment());
+    });
   }
 
   /// Consumes whitespace, but not comments.
   @protected
   void whitespaceWithoutComments() {
-    while (!scanner.isDone && scanner.peekChar().isWhitespace) {
-      scanner.readChar();
-    }
+    recordWhitespace(() {
+      while (!scanner.isDone && scanner.peekChar().isWhitespace) {
+        scanner.readChar();
+      }
+    });
   }
 
   /// Consumes spaces and tabs.
   @protected
   void spaces() {
-    while (!scanner.isDone && scanner.peekChar().isSpaceOrTab) {
-      scanner.readChar();
-    }
+    recordWhitespace(() {
+      while (!scanner.isDone && scanner.peekChar().isSpaceOrTab) {
+        scanner.readChar();
+      }
+    });
   }
 
   /// Consumes and ignores a comment if possible.
@@ -138,27 +152,41 @@ class Parser {
   ///
   /// Returns whether the comment was consumed.
   @protected
-  bool silentComment() {
-    scanner.expect("//");
-    while (!scanner.isDone && !scanner.peekChar().isNewline) {
-      scanner.readChar();
-    }
-    return true;
-  }
+  bool silentComment() => recordWhitespace(() {
+        scanner.expect("//");
+        while (!scanner.isDone && !scanner.peekChar().isNewline) {
+          scanner.readChar();
+        }
+        return true;
+      });
 
   /// Consumes and ignores a loud (CSS-style) comment.
   @protected
   void loudComment() {
-    scanner.expect("/*");
-    while (true) {
-      var next = scanner.readChar();
-      if (next != $asterisk) continue;
+    recordWhitespace(() {
+      scanner.expect("/*");
+      while (true) {
+        var next = scanner.readChar();
+        if (next != $asterisk) continue;
 
-      do {
-        next = scanner.readChar();
-      } while (next == $asterisk);
-      if (next == $slash) break;
-    }
+        do {
+          next = scanner.readChar();
+        } while (next == $asterisk);
+        if (next == $slash) break;
+      }
+    });
+  }
+
+  /// Records the text consumbed by [callback] as whitespace.
+  ///
+  /// This should only be used in low-level whitespace-consuming functions, not
+  /// higher-level
+  @protected
+  T recordWhitespace<T>(T Function() callback) {
+    if (_afterWhitespace != scanner.position) _beforeWhitespace = position;
+    var result = callback();
+    _afterWhitespace = position;
+    return result;
   }
 
   /// Consumes a plain CSS identifier.
@@ -647,19 +675,31 @@ class Parser {
   /// Runs [consumer] and returns the source text that it consumes.
   @protected
   String rawText(void consumer()) {
+    // If whitespace is being consumed as raw text, don't skip it in spans.
+    var oldBeforeWhitespace = _beforeWhitespace;
+    var oldAfterWhitespace = _afterWhitespace;
     var start = scanner.position;
     consumer();
+    _beforeWhitespace = oldBeforeWhitespace;
+    _afterWhitespace = oldAfterWhitespace;
     return scanner.substring(start);
   }
 
-  /// Like [scanner.spanFrom], but passes the span through [_interpolationMap]
-  /// if it's available.
+  /// Like [scanner.spanFrom], with a few differences:
+  ///
+  /// * If [_interpolationMap] is available, this passes the span through that.
+  /// * This omits any trailing whitespace from the span, including
+  ///   non-statement comments.
   @protected
   FileSpan spanFrom(LineScannerState state) {
-    var span = scanner.spanFrom(state);
-    return _interpolationMap == null
-        ? span
-        : LazyFileSpan(() => _interpolationMap!.mapSpan(span));
+    var end = scanner.position;
+    if (end == _afterWhitespace) end = _beforeWhitespace;
+    var span = scanner.spanFromPosition(state.position, end);
+    return switch (_interpolationMap) {
+      var interpolationMap? =>
+        LazyFileSpan(() => interpolationMap.mapSpan(span)),
+      _ => span
+    };
   }
 
   /// Prints a warning to standard error, associated with [span].
