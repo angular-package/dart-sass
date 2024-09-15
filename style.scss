@@ -1,0 +1,48 @@
+
+@use "sass:map";
+@use "sass:list";
+@use "sass:string";
+@use "sass:var";
+@use "sass:variant";
+
+div {
+  style: 1;
+}
+
+@function a($name) {
+  @return $name;
+}
+
+// List.
+// @debug list.first(a b c d); // a
+// @debug list.from(a b c d, 3); // c d
+// @debug list.last(a b c d); // d
+// @debug list.reversed(a b c d); // d c b a
+
+// @debug list.set-bracketed(a b c d, false); // a b c d
+// @debug list.set-bracketed(a b c d, true); // [a b c d]
+
+// @debug list.set-separator(a b c d, comma); // (a, b, c, d)
+// @debug list.set-separator(a b c d, slash); // (a, b, c, d)
+// @debug list.set-separator((a, b, c, d), space); // a b c d
+
+// @debug list.toggle-bracketed(list.toggle-bracketed(a b c d)); // 
+
+// Map.
+// @debug map.pick((a: (b: (c: 2222)), d: 2), a, b);
+// @debug map.is((a: 1)); // true
+// @debug map.is("b"); // false
+
+// String.
+// @debug string.is(a); // true
+// @debug string.join('-', a, b, c, d); // a-b-c-d
+
+// var
+@debug is-var(var(--selector-nth));
+@debug var.is(var(--selector-nth));
+
+@debug is-var(--selector-nth);
+@debug var.is(--selector-nth);
+
+@debug is-variant(var(--selector-nth));
+@debug variant.is(var(--selector-nth));
