@@ -58,7 +58,7 @@ class SassExtensionList {
     "set-bracketed",
     r"$list, $bracketed",
     (arguments) => SassList(
-      arguments[0].asList.reversed.toList(),
+      arguments[0].asList.toList(),
       arguments[0].separator,
       brackets: arguments[1].isTruthy
     )
@@ -68,7 +68,7 @@ class SassExtensionList {
     "set-separator",
     r"$list, $separator",
     (arguments) => SassList(
-      arguments[0].asList.reversed.toList(),
+      arguments[0].asList.toList(),
       SassExtensionList.isSeparator(
         SassExtensionCore.getText(arguments[1], "separator")
       )
@@ -79,7 +79,7 @@ class SassExtensionList {
     "toggle-bracketed",
     r"$list",
     (arguments) => SassList(
-      arguments[0].asList.reversed.toList(),
+      arguments[0].asList.toList(),
       arguments[0].separator,
       brackets: arguments[0].hasBrackets ? false : true
     )
