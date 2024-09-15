@@ -7,6 +7,10 @@ import 'dart:collection';
 import 'package:collection/collection.dart';
 
 import 'callable.dart';
+
+// Extension by STER.Black for angular-package.
+import 'extension/extension_functions.dart' as extension_functions; // ---> Add comment to deactivate extension <---
+
 import 'functions/color.dart' as color;
 import 'functions/list.dart' as list;
 import 'functions/map.dart' as map;
@@ -14,6 +18,7 @@ import 'functions/math.dart' as math;
 import 'functions/meta.dart' as meta;
 import 'functions/selector.dart' as selector;
 import 'functions/string.dart' as string;
+
 
 /// Sass core functions that are globally available.
 ///
@@ -27,6 +32,7 @@ final List<BuiltInCallable> globalFunctions = UnmodifiableListView([
   ...selector.global,
   ...string.global,
   ...meta.global,
+  ...extension_functions.globalFunctions, // ---> Add comment to deactivate extension
 
   // This is only invoked using `call()`. Hand-authored `if()`s are parsed as
   // [IfExpression]s.
@@ -45,4 +51,5 @@ final coreModules = UnmodifiableListView([
   math.module,
   selector.module,
   string.module
+  , ...extension_functions.coreModules, // ---> Add comment to deactivate extension
 ]);
