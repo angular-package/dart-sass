@@ -3,11 +3,11 @@
 // https://opensource.org/licenses/MIT.
 
 import 'dart:collection';
-
 import 'package:collection/collection.dart';
 
 import '../callable.dart';
 import '../exception.dart';
+import '../extension/extension_map.dart'; // ---> Add comment to deactivate extension
 import '../module/built_in.dart';
 import '../util/iterable.dart';
 import '../util/map.dart';
@@ -21,6 +21,7 @@ final global = UnmodifiableListView([
   _keys.withDeprecationWarning('map').withName("map-keys"),
   _values.withDeprecationWarning('map').withName("map-values"),
   _hasKey.withDeprecationWarning('map').withName("map-has-key")
+  , ...SassExtensionMap.global // ---> Add comment to deactivate extension
 ]);
 
 /// The Sass map module.
@@ -34,6 +35,7 @@ final module = BuiltInModule("map", functions: <Callable>[
   _hasKey,
   _deepMerge,
   _deepRemove
+  , ...SassExtensionMap.functions // ---> Add comment to deactivate extension
 ]);
 
 final _get = _function("get", r"$map, $key, $keys...", (arguments) {

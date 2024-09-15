@@ -3,11 +3,11 @@
 // https://opensource.org/licenses/MIT.
 
 import 'dart:collection';
-
 import 'package:collection/collection.dart';
 
 import '../callable.dart';
 import '../exception.dart';
+import '../extension/extension_list.dart';  // ---> Add comment to deactivate extension
 import '../module/built_in.dart';
 import '../value.dart';
 
@@ -22,12 +22,14 @@ final global = UnmodifiableListView([
   _index.withDeprecationWarning('list'),
   _isBracketed.withDeprecationWarning('list'),
   _separator.withDeprecationWarning('list').withName("list-separator")
+  , ...SassExtensionList.global // ---> Add comment to deactivate extension
 ]);
 
 /// The Sass list module.
 final module = BuiltInModule("list", functions: <Callable>[
   _length, _nth, _setNth, _join, _append, _zip, _index, _isBracketed, //
   _separator, _slash
+  , ...SassExtensionList.functions // ---> Add comment to deactivate extension
 ]);
 
 final _length = _function(
