@@ -7,9 +7,9 @@
 import 'dart:collection';
 import 'package:collection/collection.dart';
 
-import '../callable.dart';
-import '../module/built_in.dart';
-import '../value.dart';
+import '../../callable.dart';
+import '../../module/built_in.dart';
+import '../../value.dart';
 
 
 /*

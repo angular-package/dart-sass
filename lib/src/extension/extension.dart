@@ -4,15 +4,15 @@
 // MIT-style license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import '../functions/var.dart' as _var;
-import '../functions/variant.dart' as _variant;
+import 'functions/var.dart' as _var;
+import 'functions/variant.dart' as _variant;
 
-final globalFunctions = [
-  ..._var.varGlobal,
-  ..._variant.variantGlobal
-];
-
-final coreModules = [
+final modules = [
   _var.varModule,
   _variant.variantModule,
+];
+
+final functions = [
+  ..._var.varGlobal,
+  ..._variant.variantGlobal
 ];
