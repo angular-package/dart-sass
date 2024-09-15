@@ -6,7 +6,7 @@
 import '../callable.dart';
 import '../util/iterable.dart';
 import '../value.dart';
-import '../helpers/helpers.dart';
+import 'helpers/helpers.dart';
 
 /*
  * Sass Extension Class for Map

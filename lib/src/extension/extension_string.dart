@@ -5,7 +5,7 @@
 // https://opensource.org/licenses/MIT.
 import '../callable.dart';
 import '../value.dart';
-import '../helpers/helpers.dart';
+import 'helpers/helpers.dart';
 
 /*
  * Sass Extension Class for String
