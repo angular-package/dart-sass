@@ -7,8 +7,10 @@ import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 
+
 import '../callable.dart';
 import '../exception.dart';
+import '../extension/extension_string.dart'; // ---> Add comment to deactivate extension
 import '../module/built_in.dart';
 import '../util/character.dart';
 import '../utils.dart';
@@ -31,12 +33,14 @@ final global = UnmodifiableListView([
   _insert.withDeprecationWarning('string').withName("str-insert"),
   _index.withDeprecationWarning('string').withName("str-index"),
   _slice.withDeprecationWarning('string').withName("str-slice")
+  , ...SassExtensionString.global // ---> Add comment to deactivate extension  
 ]);
 
 /// The Sass string module.
 final module = BuiltInModule("string", functions: <Callable>[
   _unquote, _quote, _toUpperCase, _toLowerCase, _length, _insert, _index, //
   _slice, _uniqueId,
+  ...SassExtensionString.functions, // ---> Add comment to deactivate extension  
 
   _function("split", r"$string, $separator, $limit: null", (arguments) {
     var string = arguments[0].assertString("string");
